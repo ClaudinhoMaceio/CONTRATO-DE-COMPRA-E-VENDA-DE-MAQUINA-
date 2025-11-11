@@ -1,0 +1,1530 @@
+<!doctype html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Contrato de Compra e Venda — Gerador PDF</title>
+
+
+
+  <!-- Fonte do sistema (offline) -->
+
+
+
+  <style>
+
+    :root{
+
+      --bg:#f6f7fb;
+
+      --card:#ffffff;
+
+      --muted:#6b7280;
+
+      --accent:#0f172a;
+
+      --primary:#0b5cff;
+
+      --pad:18px;
+
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+
+      margin:0;
+
+      background:linear-gradient(180deg, #f5f8ff 0%, var(--bg) 100%);
+
+      color:var(--accent);
+
+      padding:32px;
+
+      -webkit-font-smoothing:antialiased;
+
+    }
+
+
+
+    .app {
+
+      max-width:1100px;
+
+      margin:0 auto;
+
+      display:grid;
+
+      grid-template-columns: 420px 1fr;
+
+      gap:24px;
+
+      align-items:start;
+
+    }
+
+
+
+    .panel {
+
+      background:var(--card);
+
+      padding:18px;
+
+      border-radius:12px;
+
+      box-shadow:0 6px 18px rgba(12,20,40,0.06);
+
+    }
+
+
+
+    h1{font-size:18px;margin:0 0 12px 0}
+
+    p.lead{margin:0 0 12px 0;color:var(--muted);font-size:13px}
+
+
+
+    label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+
+    input[type=text], input[type=date], textarea, select{
+
+      width:100%;
+
+      padding:10px 12px;
+
+      border-radius:8px;
+
+      border:1px solid #e6e9ef;
+
+      font-size:14px;
+
+      margin-top:6px;
+
+      background:#fff;
+
+    }
+
+    textarea{min-height:90px;resize:vertical;padding-top:10px}
+
+    .row{display:flex;gap:10px}
+
+    .row .col{flex:1}
+
+
+
+    .btn {
+
+      display:inline-block;
+
+      background:var(--primary);
+
+      color:#fff;
+
+      border:none;
+
+      padding:10px 14px;
+
+      border-radius:8px;
+
+      cursor:pointer;
+
+      font-weight:600;
+
+      margin-top:12px;
+
+      text-decoration:none;
+
+    }
+
+    .btn.secondary{background:#fff;color:var(--primary);border:1px solid #d0dbff}
+
+
+
+    .preview-area{
+
+      padding:20px;
+
+      background:linear-gradient(180deg,#fff,#fbfdff);
+
+      border-radius:12px;
+
+      min-height:780px;
+
+      box-shadow:0 4px 14px rgba(12,20,40,0.04);
+
+      overflow:auto;
+
+      max-width:100%;
+
+    }
+
+
+
+    /* Contrato estilizado (o conteúdo que será convertido em PDF) */
+
+    #contract {
+
+      width:210mm; /* A4 width for consistent PDF scaling */
+
+      max-width:210mm;
+
+      min-height:297mm;
+
+      margin:0 auto;
+
+      padding:12px 18px;
+
+      background:#fff;
+
+      color:#111827;
+
+      font-size:10px;
+
+      line-height:1.3;
+
+      box-shadow:none;
+
+      overflow:hidden;
+
+      word-wrap:break-word;
+
+      word-break:break-word;
+
+      overflow-wrap:break-word;
+
+      box-sizing:border-box;
+
+    }
+
+    #contract * {
+
+      max-width:100%;
+
+      word-wrap:break-word;
+
+      overflow-wrap:break-word;
+
+      box-sizing:border-box;
+
+    }
+
+
+    #contract span, #contract strong {
+
+      word-wrap:break-word;
+
+      overflow-wrap:break-word;
+
+      display:inline;
+
+    }
+
+
+
+    .contract-header{
+
+      display:flex;align-items:center;justify-content:space-between;
+
+      border-bottom:1px solid #eef2ff;padding-bottom:12px;margin-bottom:18px;
+
+    }
+
+    .contract-logo{max-width:160px; height:48px; object-fit:contain}
+
+    .contract-title{font-size:13px;font-weight:700;text-transform:uppercase;color:#0b1220;line-height:1.3}
+
+
+
+    .contract-section{margin-bottom:8px}
+
+    .contract-section h3{margin:0 0 3px 0;font-size:10px;color:#0b1220;font-weight:600}
+
+    .muted{color:#6b7280;font-size:10px;line-height:1.3}
+
+
+
+    .sig-row{display:flex;gap:12px;margin-top:36px}
+
+    .sig-box{flex:1;text-align:center}
+
+    .sig-line{margin-top:48px;border-top:1px solid #d1d5db;padding-top:8px}
+
+
+
+    .small{font-size:10px;color:var(--muted);line-height:1.3}
+
+    .field-editable{background:transparent;border-bottom:1px dashed #e6e9ef;padding:2px 4px;min-width:40px}
+
+    /* Responsive */
+
+    @media (max-width:980px){
+
+      body{padding:16px}
+
+      .app{
+
+        grid-template-columns:1fr;
+
+        gap:16px;
+
+      }
+
+      .panel{padding:14px}
+
+      #contract{
+
+        width:100%;
+
+        max-width:100%;
+
+        padding:16px;
+
+        font-size:10px;
+
+      }
+
+      .contract-title{font-size:12px}
+
+      .contract-section h3{font-size:10px}
+
+    }
+
+    @media (max-width:600px){
+
+      body{padding:12px}
+
+      .panel{padding:12px}
+
+      h1{font-size:16px}
+
+      label{font-size:12px;margin-top:8px}
+
+      input[type=text], input[type=date], textarea, select{
+
+        padding:8px 10px;
+
+        font-size:13px;
+
+      }
+
+      #contract{
+
+        padding:12px;
+
+        font-size:9px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- Painel de edição -->
+
+    <div class="panel">
+
+      <h1>Gerador de Contrato</h1>
+
+      <p class="lead">Edite os campos abaixo e clique em <strong>Gerar PDF</strong>. O documento será gerado com layout pronto para impressão.</p>
+
+
+
+      <label>Título do contrato</label>
+
+      <input id="fldTitulo" type="text" value="CONTRATO DE COMPRA E VENDA DE MAQUINA USADA BOBCAT" />
+
+
+
+      <label>Logo (opcional)</label>
+
+      <input id="logoInput" type="file" accept="image/*" />
+
+
+
+      <label>Data do contrato</label>
+
+      <input id="fldDate" type="date" value="2024-05-21" />
+
+
+
+      <label>Vendedor — nome completo</label>
+
+      <input id="fldVendedor" type="text" value="GECIVALDO ALVES VIEIRA" />
+
+
+
+      <label>Vendedor — estado civil / profissão</label>
+
+      <input id="fldVendedorEstado" type="text" value="casado, profissional liberal" />
+
+
+
+      <label>Vendedor — RG / CPF / Endereço completo</label>
+
+      <textarea id="fldVendedorDados">brasileiro, casado, profissional liberal, portador da cédula de Identidade RG n° 36.234.564-8 SSP, inscrito no CPF n° 549.541.003-30, residente e domiciliado na Rua Raimunda Franklin de Melo, nº 198, Bairro Parque Santo Antônio, CEP: 05850-270, São Paulo SP</textarea>
+
+
+
+      <label>Comprador — razão social</label>
+
+      <input id="fldComprador" type="text" value="M A VIANA LOCAÇÕES E SERVIÇOS LTDA" />
+
+
+
+      <label>Comprador — CNPJ / Endereço completo</label>
+
+      <textarea id="fldCompradorDados">devidamente inscrita no CNPJ nº 14.251.442/0001-15, com sede na Rua Desembargador Aureo Cerqueira Leite n° 36 – Cidade Kemel – CEP: 08130-410 – São Paulo/SP</textarea>
+
+
+
+      <label>Descrição detalhada do objeto (máquina)</label>
+
+      <textarea id="fldObjeto">máquina Bobcat de propriedade de Alex Fernando de Souza Tenório, neste ato representado por sua Curadora nos termos do PROCESSO: 1022965-56.2017.8.26.0002 (alvará e nota fiscal em anexo)</textarea>
+
+
+
+      <label>Descrição técnica completa</label>
+
+      <textarea id="fldObjetoTecnico">BOBCAT COMPACTA, Carregadeira Compacta BobCat Mod. S185 c/ joystick (A3L943808) de direção deslizante acionada hidraulicamente, rotação em torno e, Caçamba de 68" para carregadeira compacta modelos (6731406) Caçamba de 68" para carregadeira compacta modelos S150/S175/S, com nota fiscal emitida pela Comércio Ingersoll Brasil Veículos Auto Ltda. DANFE nº 000.035.150 Série 002, Fatura/Duplicata nº S2 035150 A e 2 035150 B</textarea>
+
+
+
+      <label>Valor (R$)</label>
+
+      <input id="fldValor" type="text" placeholder="R$ 0,00" value="R$ 165.000,00" />
+
+
+
+      <label>Valor por extenso</label>
+
+      <input id="fldValorExtenso" type="text" value="cento e sessenta e cinco mil reais" />
+
+
+
+      <label>Data de entrega</label>
+
+      <input id="fldDataEntrega" type="date" value="2024-05-21" />
+
+
+
+      <label>Dados bancários (para pagamento)</label>
+
+      <textarea id="fldBancos">Banco Santander – Agência 3829 – Conta corrente 130039761 – CNPJ nº 18464675/0001-57 – Gecivaldo Alves Vieira – PIX: 184646750001/57</textarea>
+
+
+
+      <label>Multa moratória (%)</label>
+
+      <input id="fldMulta" type="text" value="1" />
+
+
+
+      <label>Prazo para retirada (dias)</label>
+
+      <input id="fldPrazo" type="text" value="30" />
+
+
+
+      <label>Nome do proprietário original (se aplicável)</label>
+
+      <input id="fldProprietarioOriginal" type="text" value="Alex Fernando de Souza Tenório" />
+
+
+
+      <label>Número do processo judicial (se aplicável)</label>
+
+      <input id="fldProcesso" type="text" value="1022965-56.2017.8.26.0002" />
+
+
+
+      <label>Foro (cidade)</label>
+
+      <input id="fldForo" type="text" value="Comarca de São Paulo – SP" />
+
+
+
+      <label>Comprador — Nome para assinatura</label>
+
+      <input id="fldCompradorAssinatura" type="text" value="M A VIANA LOCAÇÕES E SERVIÇOS LTDA" />
+
+
+
+      <label>Comprador — CNPJ para assinatura</label>
+
+      <input id="fldCompradorCNPJAssinatura" type="text" value="14.251.442/0001-15" />
+
+
+
+      <label>Vendedor — Nome para assinatura</label>
+
+      <input id="fldVendedorAssinatura" type="text" value="GECIVALDO ALVES VIEIRA" />
+
+
+
+      <label>Vendedor — CPF para assinatura</label>
+
+      <input id="fldVendedorCPFAssinatura" type="text" value="549.541.003-30" />
+
+
+
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+
+        <button class="btn" id="btnGenerate">Gerar PDF</button>
+
+        <button class="btn secondary" id="btnPreview">Atualizar Pré-via</button>
+
+        <button class="btn secondary" id="btnClear" style="background:#dc2626;color:#fff;border:none">Limpar Todos os Campos</button>
+
+      </div>
+
+
+
+      <p class="small" style="margin-top:12px">O PDF gerado será em formato A4. Se quiser, edite o texto no painel antes de gerar.</p>
+
+    </div>
+
+
+
+    <!-- Painel de preview / contrato -->
+
+    <div class="panel preview-area">
+
+      <div id="contract" aria-label="Preview do contrato para gerar PDF">
+
+        <div class="contract-header">
+
+          <img id="logoPreview" class="contract-logo" alt="Logo" src="" style="display:none"/>
+
+          <div style="flex:1;text-align:center">
+
+            <div class="contract-title" id="cTitulo">CONTRATO DE COMPRA E VENDA DE MAQUINA USADA BOBCAT</div>
+
+          </div>
+
+          <div style="width:120px"></div>
+
+        </div>
+
+
+
+        <div class="contract-section" style="margin-bottom:8px">
+
+          <div style="border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:8px"></div>
+
+          <div style="margin-bottom:6px;line-height:1.35">Pelo presente instrumento particular, como vendedor, e assim doravante designado:</div>
+
+          <div style="margin-bottom:6px;line-height:1.35"><strong><span id="cVendedor">GECIVALDO ALVES VIEIRA</span></strong>, <span id="cVendedorDados">brasileiro, casado, profissional liberal, portador da cédula de Identidade RG n° 36.234.564-8 SSP, inscrito no CPF n° 549.541.003-30, residente e domiciliado na Rua Raimunda Franklin de Melo, nº 198, Bairro Parque Santo Antônio, CEP: 05850-270, São Paulo SP</span>, doravante denominado "VENDEDOR".</div>
+
+          <div style="margin-top:8px;margin-bottom:6px;line-height:1.35">E, de outro lado, na qualidade de comprador, e assim doravante designado:</div>
+
+          <div style="margin-bottom:6px;line-height:1.35"><strong><span id="cComprador">M A VIANA LOCAÇÕES E SERVIÇOS LTDA</span></strong>, <span id="cCompradorDados">devidamente inscrita no CNPJ nº 14.251.442/0001-15, com sede na Rua Desembargador Aureo Cerqueira Leite n° 36 – Cidade Kemel – CEP: 08130-410 – São Paulo/SP</span>.</div>
+
+          <div style="margin-top:8px;margin-bottom:6px;line-height:1.35">As partes acima qualificadas acordam em formalizar o presente contrato de venda e compra da <span id="cObjeto">máquina Bobcat de propriedade de Alex Fernando de Souza Tenório, neste ato representado por sua Curadora nos termos do PROCESSO: 1022965-56.2017.8.26.0002 (alvará e nota fiscal em anexo)</span> que se regerá pelas cláusulas seguintes:</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>1. DO OBJETO</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>1.1.</strong> O objeto do presente contrato consiste na venda da máquina <span id="cObjetoTecnico">BOBCAT COMPACTA, Carregadeira Compacta BobCat Mod. S185 c/ joystick (A3L943808) de direção deslizante acionada hidraulicamente, rotação em torno e, Caçamba de 68" para carregadeira compacta modelos (6731406) Caçamba de 68" para carregadeira compacta modelos S150/S175/S, com nota fiscal emitida pela Comércio Ingersoll Brasil Veículos Auto Ltda. DANFE nº 000.035.150 Série 002, Fatura/Duplicata nº S2 035150 A e 2 035150 B</span>.</div>
+
+          <div style="margin-bottom:5px;line-height:1.35">O veículo será entregue dia <strong><span id="cDataEntrega">21 DE MAIO DE 2024</span></strong>, nas condições que foi vistoriado pelo comprador.</div>
+
+          <div style="line-height:1.35">O COMPRADOR, pagará o valor a vista em dinheiro no valor de <strong><span id="cValorTxt">R$ 165.000,00</span> (<span id="cValorExtenso">cento e sessenta e cinco mil reais</span>)</strong>.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>2. DAS RESPONSABILIDADES</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>2.1.</strong> Fica responsável o VENDEDOR pela entrega do veículo no estado que se encontra, bem como, livre de qualquer ônus fiduciário.</div>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>2.2.</strong> O COMPRADOR será responsável por providenciar a remoção do veículo no prazo de <strong><span id="cPrazo">30</span> (trinta dias)</strong>.</div>
+
+          <div style="line-height:1.35"><strong>2.3.</strong> A partir do recebimento e retirada do veículo por parte do COMPRADOR, no dia <strong><span id="cDataEntrega2">21 de maio de 2024</span></strong>, será de sua exclusiva responsabilidade <strong>CIVIL E CRIMINALMENTE</strong> por qualquer ocorrência futura que possa surgir em decorrente do uso do veículo.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>3. DO PAGAMENTO</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>3.1.</strong> O COMPRADOR efetuara o pagamento de <strong><span id="cValorTxt2">R$ 165.000,00</span> (<span id="cValorExtenso2">cento e sessenta e cinco mil reais</span>)</strong> no ato da ratificação deste instrumento.</div>
+
+          <div style="margin-bottom:5px;margin-left:12px;line-height:1.35">* Dados Bancarios: <span id="cBancos">Banco Santander – Agência 3829 – Conta corrente 130039761 – CNPJ nº 18464675/0001-57 – Gecivaldo Alves Vieira – PIX: 184646750001/57</span>.</div>
+
+          <div style="line-height:1.35"><strong>3.2.</strong> O não pagamento da parcela, na data de seu respectivo vencimento, ensejará o acréscimo de multa moratória da ordem de <strong><span id="cMulta">1</span>% (um por cento)</strong> ao mês, incidente sobre o valor da parcela única de <strong><span id="cValorTxt3">R$ 165.000,00</span> (<span id="cValorExtenso3">cento e sessenta e cinco mil reais</span>)</strong>.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>4. PRAZO</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>4.1.</strong> Este Contrato permanecerá em vigor até a integralização dos pagamentos em aberto descritos do item (3.4), do contrato principal.</div>
+
+          <div style="line-height:1.35"><strong>4.2.</strong> Este contrato permanecerá em vigor até que o COMPRADOR realize a quitação integral da entrada de <strong><span id="cValorTxt4">R$ 165.000,00</span> (<span id="cValorExtenso4">cento e sessenta e cinco mil reais</span>)</strong>.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>5. DAS CONDIÇÕES GERAIS</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>5.1.</strong> As cláusula e condições aqui expressas estenderão ao seu cumprimento fiel em todos os seus termos, cláusulas e condições a seus legítimos herdeiros e sucessores, inclusive a quem responder por evicção.</div>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>5.2.</strong> Todas as comunicações e notificações entre as partes relativas a este Contrato deverão ser feitas por escrito, nas pessoas e endereços a seguir estabelecidos;</div>
+
+          <div style="margin-left:12px;margin-bottom:3px;line-height:1.35">• <span id="cComprador2">M A VIANA LOCAÇÕES E SERVIÇOS LTDA</span>, <span id="cCompradorDados2">Rua Desembargador Aureo Cerqueira Leite n° 36 – Cidade Kemel – CEP: 08130-410 – São Paulo/SP</span>.</div>
+
+          <div style="margin-left:12px;line-height:1.35">• <span id="cVendedor2">GECIVALDO ALVES VIEIRA</span>, <span id="cVendedorDados2">Rua Raimunda Franklin de Melo, n° 198, Parque Santo Antônio, CEP: 05850-270, São Paulo - SP</span>.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>6.</h3>
+
+          <div style="line-height:1.35">O não exercício ou a demora no exercício de algum direito relativo a este Contrato não será tido como renúncia a esse direito pela parte que deu causa, ou como alteração deste Contrato.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>7.</h3>
+
+          <div style="line-height:1.35">Este Contrato somente poderá ser modificado mediante acordo por escrito entre as partes.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>8.</h3>
+
+          <div style="line-height:1.35">Nenhuma das partes poderá ceder ou de qualquer forma transferir qualquer dos direitos e obrigações aqui previstos sem o consentimento por escrito da outra parte.</div>
+
+        </div>
+
+
+
+        <div class="contract-section">
+
+          <h3>9. DO FORO</h3>
+
+          <div style="margin-bottom:5px;line-height:1.35"><strong>9.1.</strong> As partes elegem o foro da <strong id="cForo">Comarca de São Paulo SP</strong>, para dirimir as controvérsias relativas ao presente Contrato, com exclusão de qualquer outro, por mais privilegiado que seja.</div>
+
+          <div style="line-height:1.35"><strong>9.2.</strong> Por estarem assim justos e contratados, firmam o presente instrumento, em duas vias de igual teor, juntamente com 02 (duas) testemunhas.</div>
+
+        </div>
+
+
+
+        <div class="contract-section" style="margin-bottom:6px">
+
+          <div style="margin-bottom:6px;line-height:1.3">São Paulo, <span id="cDate">21 de maio de 2024</span>.</div>
+
+        </div>
+
+
+
+        <div style="margin-top:12px;margin-bottom:8px">
+
+          <div style="display:flex;gap:15px;margin-bottom:8px">
+
+            <div style="flex:1;text-align:left">
+
+              <div style="border-top:1px solid #d1d5db;padding-top:5px;margin-top:20px">
+
+                <div style="margin-bottom:5px">________________________________</div>
+
+              </div>
+
+            </div>
+
+            <div style="flex:1;text-align:left">
+
+              <div style="border-top:1px solid #d1d5db;padding-top:5px;margin-top:20px">
+
+                <div style="margin-bottom:5px">__________________________________</div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <div style="display:flex;gap:15px;margin-top:8px">
+
+            <div style="flex:1;text-align:left">
+
+              <div style="margin-bottom:4px;font-size:8px">VENDEDOR</div>
+
+              <div style="font-weight:600;margin-bottom:2px;font-size:8px" id="sVendedor">GECIVALDO ALVES VIEIRA</div>
+
+              <div class="small" style="font-size:7px">CPF/MF n° <span id="sVendedorCPF">549.541.003-30</span></div>
+
+            </div>
+
+            <div style="flex:1;text-align:left">
+
+              <div style="font-weight:600;margin-bottom:4px;font-size:8px">COMPRADOR</div>
+
+              <div style="font-weight:600;margin-bottom:2px;font-size:8px" id="sComprador">M A VIANA LOCAÇÕES E SERVIÇOS LTDA</div>
+
+              <div class="small" style="font-size:7px">CNPJ nº <span id="sCompradorCNPJ">14.251.442/0001-15</span></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <div style="margin-top:8px;margin-bottom:6px" class="small">
+
+          <div style="margin-bottom:4px;font-size:9px"><strong>TESTEMUNHAS:</strong></div>
+
+          <div style="margin-bottom:3px;font-size:9px">Nome: ____________________________________</div>
+
+          <div style="margin-bottom:6px;font-size:9px">RG: ______________________</div>
+
+          <div style="margin-bottom:3px;font-size:9px">Nome: _____________________________________</div>
+
+          <div style="margin-bottom:6px;font-size:9px">RG: ______________________</div>
+
+        </div>
+
+
+
+      </div> <!-- /contract -->
+
+    </div> <!-- /panel preview -->
+
+  </div> <!-- /app -->
+
+
+
+  <!-- html2pdf (inclui html2canvas + jsPDF) -->
+  <!-- NOTA: Para funcionar offline, baixe o arquivo html2pdf.bundle.min.js e coloque na mesma pasta -->
+  <!-- Download: https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <!-- Alternativa offline: descomente a linha abaixo e comente a linha acima -->
+  <!-- <script src="html2pdf.bundle.min.js"></script> -->
+
+
+
+  <script>
+
+    // Referências
+
+    const fldTitulo = document.getElementById('fldTitulo');
+
+    const fldDate = document.getElementById('fldDate');
+
+    const fldVendedor = document.getElementById('fldVendedor');
+
+    const fldVendedorEstado = document.getElementById('fldVendedorEstado');
+
+    const fldVendedorDados = document.getElementById('fldVendedorDados');
+
+    const fldComprador = document.getElementById('fldComprador');
+
+    const fldCompradorDados = document.getElementById('fldCompradorDados');
+
+    const fldObjeto = document.getElementById('fldObjeto');
+
+    const fldObjetoTecnico = document.getElementById('fldObjetoTecnico');
+
+    const fldValor = document.getElementById('fldValor');
+
+    const fldValorExtenso = document.getElementById('fldValorExtenso');
+
+    const fldDataEntrega = document.getElementById('fldDataEntrega');
+
+    const fldBancos = document.getElementById('fldBancos');
+
+    const fldMulta = document.getElementById('fldMulta');
+
+    const fldPrazo = document.getElementById('fldPrazo');
+
+    const fldForo = document.getElementById('fldForo');
+
+    const fldProprietarioOriginal = document.getElementById('fldProprietarioOriginal');
+
+    const fldProcesso = document.getElementById('fldProcesso');
+
+    const fldCompradorAssinatura = document.getElementById('fldCompradorAssinatura');
+
+    const fldCompradorCNPJAssinatura = document.getElementById('fldCompradorCNPJAssinatura');
+
+    const fldVendedorAssinatura = document.getElementById('fldVendedorAssinatura');
+
+    const fldVendedorCPFAssinatura = document.getElementById('fldVendedorCPFAssinatura');
+
+
+
+    const cTitulo = document.getElementById('cTitulo');
+
+    const cDate = document.getElementById('cDate');
+
+    const cVendedor = document.getElementById('cVendedor');
+
+    const cVendedorDados = document.getElementById('cVendedorDados');
+
+    const cVendedor2 = document.getElementById('cVendedor2');
+
+    const cVendedorDados2 = document.getElementById('cVendedorDados2');
+
+    const cComprador = document.getElementById('cComprador');
+
+    const cCompradorDados = document.getElementById('cCompradorDados');
+
+    const cComprador2 = document.getElementById('cComprador2');
+
+    const cCompradorDados2 = document.getElementById('cCompradorDados2');
+
+    const cObjeto = document.getElementById('cObjeto');
+
+    const cObjetoTecnico = document.getElementById('cObjetoTecnico');
+
+    const cValorTxt = document.getElementById('cValorTxt');
+
+    const cValorTxt2 = document.getElementById('cValorTxt2');
+
+    const cValorTxt3 = document.getElementById('cValorTxt3');
+
+    const cValorTxt4 = document.getElementById('cValorTxt4');
+
+    const cValorExtenso = document.getElementById('cValorExtenso');
+
+    const cValorExtenso2 = document.getElementById('cValorExtenso2');
+
+    const cValorExtenso3 = document.getElementById('cValorExtenso3');
+
+    const cValorExtenso4 = document.getElementById('cValorExtenso4');
+
+    const cDataEntrega = document.getElementById('cDataEntrega');
+
+    const cDataEntrega2 = document.getElementById('cDataEntrega2');
+
+    const cBancos = document.getElementById('cBancos');
+
+    const cMulta = document.getElementById('cMulta');
+
+    const cPrazo = document.getElementById('cPrazo');
+
+    const cForo = document.getElementById('cForo');
+
+
+
+    const sVendedor = document.getElementById('sVendedor');
+
+    const sVendedorCPF = document.getElementById('sVendedorCPF');
+
+    const sComprador = document.getElementById('sComprador');
+
+    const sCompradorCNPJ = document.getElementById('sCompradorCNPJ');
+
+
+
+    const logoInput = document.getElementById('logoInput');
+
+    const logoPreview = document.getElementById('logoPreview');
+
+
+
+    function formatDateToLong(inputValue){
+
+      // inputValue expected yyyy-mm-dd
+
+      if(!inputValue) return '';
+
+      const d = new Date(inputValue + 'T00:00:00');
+
+      const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+      return d.getDate() + ' de ' + months[d.getMonth()] + ' de ' + d.getFullYear();
+
+    }
+
+    function formatDateToUpper(inputValue){
+
+      // inputValue expected yyyy-mm-dd
+
+      if(!inputValue) return '';
+
+      const d = new Date(inputValue + 'T00:00:00');
+
+      const months = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+
+      return d.getDate() + ' DE ' + months[d.getMonth()] + ' DE ' + d.getFullYear();
+
+    }
+
+    function extractCNPJ(text){
+
+      // Extrai CNPJ do texto do comprador
+
+      const match = text.match(/CNPJ\s*n[º°]\s*(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})/i);
+
+      return match ? match[1] : '';
+
+    }
+
+
+
+    function updatePreview(){
+
+      try {
+
+        // Atualiza texto na pré-via a partir dos inputs
+
+        // Não usar valores padrão - usar apenas o que está nos campos
+
+        if(cTitulo && fldTitulo) {
+
+          cTitulo.textContent = fldTitulo.value;
+
+        }
+
+        if(cDate && fldDate) {
+
+          cDate.textContent = fldDate.value ? formatDateToLong(fldDate.value) : '';
+
+        }
+
+        if(cVendedor && fldVendedor) {
+
+          cVendedor.textContent = fldVendedor.value;
+
+        }
+
+        if(cVendedorDados && fldVendedorDados) {
+
+          cVendedorDados.textContent = fldVendedorDados.value;
+
+        }
+
+        if(cVendedor2 && fldVendedor) {
+
+          cVendedor2.textContent = fldVendedor.value;
+
+        }
+
+        // Extrai endereço do vendedor para a seção 5.2 (procura por "Rua" ou "rua")
+
+        if(fldVendedorDados && cVendedorDados2) {
+
+          const vendedorText = fldVendedorDados.value;
+
+          const ruaMatch = vendedorText.match(/(Rua|rua|Av|av|Avenida|avenida)[^,]*,[^,]*,[^,]*/i);
+
+          if(ruaMatch){
+
+            cVendedorDados2.textContent = ruaMatch[0].trim();
+
+          } else {
+
+            // Tenta pegar as últimas partes após CEP
+
+            const cepMatch = vendedorText.match(/CEP[^,]*,\s*([^,]+)/i);
+
+            if(cepMatch){
+
+              cVendedorDados2.textContent = cepMatch[1].trim();
+
+            } else {
+
+              cVendedorDados2.textContent = '';
+
+            }
+
+          }
+
+        }
+
+        if(cComprador && fldComprador) {
+
+          cComprador.textContent = fldComprador.value;
+
+        }
+
+        if(cCompradorDados && fldCompradorDados) {
+
+          cCompradorDados.textContent = fldCompradorDados.value;
+
+        }
+
+        if(cComprador2 && fldComprador) {
+
+          cComprador2.textContent = fldComprador.value;
+
+        }
+
+        // Extrai endereço do comprador para a seção 5.2 (procura por "Rua" ou "rua" ou "sede na")
+
+        if(fldCompradorDados && cCompradorDados2) {
+
+          const compradorText = fldCompradorDados.value;
+
+          const sedeMatch = compradorText.match(/sede na\s+([^–]+(?:–[^–]+)*)/i);
+
+          if(sedeMatch){
+
+            cCompradorDados2.textContent = sedeMatch[1].trim();
+
+          } else {
+
+            const ruaMatch = compradorText.match(/(Rua|rua|Av|av|Avenida|avenida)[^–]+(?:–[^–]+)*/i);
+
+            if(ruaMatch){
+
+              cCompradorDados2.textContent = ruaMatch[0].trim();
+
+            } else {
+
+              cCompradorDados2.textContent = '';
+
+            }
+
+          }
+
+        }
+
+        if(cObjeto && fldObjeto) {
+
+          cObjeto.textContent = fldObjeto.value;
+
+        }
+
+        if(cObjetoTecnico && fldObjetoTecnico) {
+
+          cObjetoTecnico.textContent = fldObjetoTecnico.value;
+
+        }
+
+        const valor = (fldValor && fldValor.value) ? fldValor.value : '';
+
+        const valorExtenso = (fldValorExtenso && fldValorExtenso.value) ? fldValorExtenso.value : '';
+
+        if(cValorTxt) cValorTxt.textContent = valor;
+
+        if(cValorTxt2) cValorTxt2.textContent = valor;
+
+        if(cValorTxt3) cValorTxt3.textContent = valor;
+
+        if(cValorTxt4) cValorTxt4.textContent = valor;
+
+        if(cValorExtenso) cValorExtenso.textContent = valorExtenso;
+
+        if(cValorExtenso2) cValorExtenso2.textContent = valorExtenso;
+
+        if(cValorExtenso3) cValorExtenso3.textContent = valorExtenso;
+
+        if(cValorExtenso4) cValorExtenso4.textContent = valorExtenso;
+
+        if(cDataEntrega && fldDataEntrega) {
+
+          cDataEntrega.textContent = fldDataEntrega.value ? formatDateToUpper(fldDataEntrega.value) : '';
+
+        }
+
+        if(cDataEntrega2 && fldDataEntrega) {
+
+          cDataEntrega2.textContent = fldDataEntrega.value ? formatDateToLong(fldDataEntrega.value) : '';
+
+        }
+
+        if(cBancos && fldBancos) {
+
+          cBancos.textContent = fldBancos.value;
+
+        }
+
+        if(cMulta && fldMulta) {
+
+          cMulta.textContent = fldMulta.value;
+
+        }
+
+        if(cPrazo && fldPrazo) {
+
+          cPrazo.textContent = fldPrazo.value;
+
+        }
+
+        if(cForo && fldForo) {
+
+          cForo.textContent = fldForo.value;
+
+        }
+
+        // Usa o campo específico de assinatura do vendedor se disponível, senão usa o campo geral
+
+        if(sVendedor) {
+
+          sVendedor.textContent = (fldVendedorAssinatura && fldVendedorAssinatura.value) ? fldVendedorAssinatura.value : ((fldVendedor && fldVendedor.value) ? fldVendedor.value : '');
+
+        }
+
+        // Atualiza o CPF do vendedor na assinatura
+
+        if(sVendedorCPF && fldVendedorCPFAssinatura) {
+
+          sVendedorCPF.textContent = fldVendedorCPFAssinatura.value;
+
+        }
+
+        // Usa os campos específicos de assinatura se disponíveis, senão usa os campos gerais
+
+        if(sComprador) {
+
+          sComprador.textContent = (fldCompradorAssinatura && fldCompradorAssinatura.value) ? fldCompradorAssinatura.value : ((fldComprador && fldComprador.value) ? fldComprador.value : '');
+
+        }
+
+        // Usa o CNPJ específico de assinatura se disponível, senão extrai do campo de dados
+
+        if(sCompradorCNPJ) {
+
+          if(fldCompradorCNPJAssinatura && fldCompradorCNPJAssinatura.value){
+
+            sCompradorCNPJ.textContent = fldCompradorCNPJAssinatura.value;
+
+          } else if(fldCompradorDados) {
+
+            const cnpj = extractCNPJ(fldCompradorDados.value);
+
+            sCompradorCNPJ.textContent = cnpj || '';
+
+          } else {
+
+            sCompradorCNPJ.textContent = '';
+
+          }
+
+        }
+
+      } catch (err) {
+
+        console.error('Erro na função updatePreview:', err);
+
+        throw err;
+
+      }
+
+    }
+
+
+
+    // primeira atualização
+
+    updatePreview();
+
+
+
+    // Atualizar preview sempre que o usuário editar
+
+    [fldTitulo, fldDate, fldVendedor, fldVendedorEstado, fldVendedorDados, fldComprador, fldCompradorDados, fldObjeto, fldObjetoTecnico, fldValor, fldValorExtenso, fldDataEntrega, fldBancos, fldMulta, fldPrazo, fldForo, fldProprietarioOriginal, fldProcesso, fldCompradorAssinatura, fldCompradorCNPJAssinatura, fldVendedorAssinatura, fldVendedorCPFAssinatura].forEach(el=>{
+
+      if(el) el.addEventListener('input', updatePreview);
+
+    });
+
+
+
+    // Carregar logo (preview)
+
+    logoInput.addEventListener('change', (e)=>{
+
+      const f = e.target.files && e.target.files[0];
+
+      if(!f) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(ev){
+
+        logoPreview.src = ev.target.result;
+
+        logoPreview.style.display = 'block';
+
+      };
+
+      reader.readAsDataURL(f);
+
+    });
+
+
+
+    // Função que gera o PDF usando html2pdf
+
+    async function generatePDF(){
+
+      // Garantir que todas as alterações estão atualizadas antes de gerar o PDF
+
+      // Atualizar preview sem restaurar valores padrão se os campos estiverem vazios
+
+      updatePreview();
+
+      // Forçar atualização dos elementos que podem ter valores padrão
+
+      // Se os campos estão vazios, manter os elementos vazios também
+
+      if(fldTitulo && !fldTitulo.value && cTitulo) cTitulo.textContent = '';
+
+      if(fldVendedor && !fldVendedor.value && cVendedor) cVendedor.textContent = '';
+
+      if(fldVendedorDados && !fldVendedorDados.value && cVendedorDados) cVendedorDados.textContent = '';
+
+      if(fldComprador && !fldComprador.value && cComprador) cComprador.textContent = '';
+
+      if(fldCompradorDados && !fldCompradorDados.value && cCompradorDados) cCompradorDados.textContent = '';
+
+      if(fldObjeto && !fldObjeto.value && cObjeto) cObjeto.textContent = '';
+
+      if(fldObjetoTecnico && !fldObjetoTecnico.value && cObjetoTecnico) cObjetoTecnico.textContent = '';
+
+      if(fldValor && !fldValor.value && cValorTxt) {
+
+        cValorTxt.textContent = '';
+
+        cValorTxt2.textContent = '';
+
+        cValorTxt3.textContent = '';
+
+        cValorTxt4.textContent = '';
+
+      }
+
+      if(fldValorExtenso && !fldValorExtenso.value && cValorExtenso) {
+
+        cValorExtenso.textContent = '';
+
+        cValorExtenso2.textContent = '';
+
+        cValorExtenso3.textContent = '';
+
+        cValorExtenso4.textContent = '';
+
+      }
+
+      if(fldBancos && !fldBancos.value && cBancos) cBancos.textContent = '';
+
+      if(fldForo && !fldForo.value && cForo) cForo.textContent = '';
+
+      if(fldVendedorAssinatura && !fldVendedorAssinatura.value && !fldVendedor.value && sVendedor) sVendedor.textContent = '';
+
+      if(fldVendedorCPFAssinatura && !fldVendedorCPFAssinatura.value && sVendedorCPF) sVendedorCPF.textContent = '';
+
+      if(fldCompradorAssinatura && !fldCompradorAssinatura.value && !fldComprador.value && sComprador) sComprador.textContent = '';
+
+      if(fldCompradorCNPJAssinatura && !fldCompradorCNPJAssinatura.value && sCompradorCNPJ) {
+
+        // Só limpar se não houver CNPJ no campo de dados também
+
+        if(!fldCompradorDados || !extractCNPJ(fldCompradorDados.value)) {
+
+          sCompradorCNPJ.textContent = '';
+
+        }
+
+      }
+
+      // Pequeno delay para garantir que o DOM foi atualizado completamente
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      const element = document.getElementById('contract');
+
+
+
+      // Ajustes de escala para A4: usamos html2pdf com configuração para A4 (mm)
+
+      const opt = {
+
+        margin:       [5, 5, 5, 5], // mm (top,left,bottom,right) - margens menores para mais espaço
+
+        filename:     `Contrato_Compra_Venda_Maquina_${(new Date()).toISOString().slice(0,10)}.pdf`,
+
+        image:        { type: 'jpeg', quality: 0.98 },
+
+        html2canvas:  { 
+
+          scale: 2, 
+
+          useCORS: true, 
+
+          logging: false, 
+
+          allowTaint: true,
+
+          letterRendering: true,
+
+          width: 794, // 210mm em pixels a 96dpi
+
+          height: 1123, // 297mm em pixels a 96dpi
+
+          scrollY: 0,
+
+          scrollX: 0
+
+        },
+
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+
+        pagebreak:    { mode: ['avoid-all', 'css'] }
+
+      };
+
+
+
+      // Scroll to top of contract for consistent rendering
+
+      element.scrollIntoView({ behavior: 'instant', block: 'start' });
+
+      // Garantir que o elemento está visível e dentro da viewport
+
+      window.scrollTo(0, 0);
+
+
+
+      // Gerar
+
+      try {
+
+        await html2pdf().set(opt).from(element).save();
+
+      } catch (err) {
+
+        console.error('Erro gerando PDF:', err);
+
+        alert('Ocorreu um erro ao gerar o PDF. Verifique se há imagens cross-origin e tente novamente.');
+
+      }
+
+    }
+
+
+
+    document.getElementById('btnGenerate').addEventListener('click', generatePDF);
+
+    document.getElementById('btnPreview').addEventListener('click', function(){
+
+      try {
+
+        updatePreview();
+
+        // Feedback visual
+
+        const btn = document.getElementById('btnPreview');
+
+        const originalText = btn.textContent;
+
+        btn.textContent = '✓ Atualizado!';
+
+        btn.style.background = '#10b981';
+
+        btn.style.color = '#fff';
+
+        setTimeout(() => {
+
+          btn.textContent = originalText;
+
+          btn.style.background = '';
+
+          btn.style.color = '';
+
+        }, 1500);
+
+      } catch (err) {
+
+        console.error('Erro ao atualizar pré-via:', err);
+
+        alert('Erro ao atualizar pré-via. Verifique o console para mais detalhes.');
+
+      }
+
+    });
+
+    // Função para limpar todos os campos editáveis
+
+    function clearAllFields(){
+
+      if(!confirm('Tem certeza que deseja limpar todos os campos? Esta ação não pode ser desfeita.')){
+
+        return;
+
+      }
+
+      // Limpar todos os campos de input e textarea
+
+      fldDate.value = '';
+
+      fldVendedor.value = '';
+
+      fldVendedorEstado.value = '';
+
+      fldVendedorDados.value = '';
+
+      fldComprador.value = '';
+
+      fldCompradorDados.value = '';
+
+      fldObjeto.value = '';
+
+      fldObjetoTecnico.value = '';
+
+      fldValor.value = '';
+
+      fldValorExtenso.value = '';
+
+      fldDataEntrega.value = '';
+
+      fldBancos.value = '';
+
+      fldMulta.value = '';
+
+      fldPrazo.value = '';
+
+      fldForo.value = '';
+
+      fldProprietarioOriginal.value = '';
+
+      fldProcesso.value = '';
+
+      fldCompradorAssinatura.value = '';
+
+      fldCompradorCNPJAssinatura.value = '';
+
+      fldVendedorAssinatura.value = '';
+
+      fldVendedorCPFAssinatura.value = '';
+
+      fldTitulo.value = '';
+
+      // Limpar logo
+
+      logoInput.value = '';
+
+      logoPreview.src = '';
+
+      logoPreview.style.display = 'none';
+
+      // Atualizar preview primeiro
+
+      updatePreview();
+
+      // Depois limpar diretamente os elementos de assinatura (para evitar valores padrão do updatePreview)
+
+      if(sVendedor) sVendedor.textContent = '';
+
+      if(sVendedorCPF) sVendedorCPF.textContent = '';
+
+      if(sComprador) sComprador.textContent = '';
+
+      if(sCompradorCNPJ) sCompradorCNPJ.textContent = '';
+
+      // Limpar também os campos principais que aparecem no contrato
+
+      if(cVendedor) cVendedor.textContent = '';
+
+      if(cVendedorDados) cVendedorDados.textContent = '';
+
+      if(cVendedor2) cVendedor2.textContent = '';
+
+      if(cVendedorDados2) cVendedorDados2.textContent = '';
+
+      if(cComprador) cComprador.textContent = '';
+
+      if(cCompradorDados) cCompradorDados.textContent = '';
+
+      if(cComprador2) cComprador2.textContent = '';
+
+      if(cCompradorDados2) cCompradorDados2.textContent = '';
+
+      if(cDate) cDate.textContent = '';
+
+      if(cObjeto) cObjeto.textContent = '';
+
+      if(cObjetoTecnico) cObjetoTecnico.textContent = '';
+
+      if(cValorTxt) cValorTxt.textContent = '';
+
+      if(cValorTxt2) cValorTxt2.textContent = '';
+
+      if(cValorTxt3) cValorTxt3.textContent = '';
+
+      if(cValorTxt4) cValorTxt4.textContent = '';
+
+      if(cValorExtenso) cValorExtenso.textContent = '';
+
+      if(cValorExtenso2) cValorExtenso2.textContent = '';
+
+      if(cValorExtenso3) cValorExtenso3.textContent = '';
+
+      if(cValorExtenso4) cValorExtenso4.textContent = '';
+
+      if(cDataEntrega) cDataEntrega.textContent = '';
+
+      if(cDataEntrega2) cDataEntrega2.textContent = '';
+
+      if(cBancos) cBancos.textContent = '';
+
+      if(cMulta) cMulta.textContent = '';
+
+      if(cPrazo) cPrazo.textContent = '';
+
+      if(cForo) cForo.textContent = '';
+
+      if(cTitulo) cTitulo.textContent = '';
+
+    }
+
+    document.getElementById('btnClear').addEventListener('click', clearAllFields);
+
+
+
+    // Dica: permitir edição direta no contrato? (não necessário — painel lateral controla)
+
+  </script>
+
+</body>
+
+</html>
+
